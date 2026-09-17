@@ -31,3 +31,8 @@ jektex:
   macros:
     - ["\\Q", "\\mathbb{Q}"]
     - ["\\C", "\\mathbb{C}"]
+
+
+kramdown:
+  input: GFM
+  math_engine: mathjax
