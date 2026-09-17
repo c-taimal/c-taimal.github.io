@@ -5,14 +5,12 @@ entries:
   - title: Home
     url: /
 
-  - title: Projects
-
-  #- title: posts by category
-  #  post_list:
-  #    category: example2
-  #    show_more: true
-  #    show_more_text: See more posts...
-  #    show_more_url: example2-archive.html
+  - title: Recent Writing
+    post_list:
+      limit: 5
+      show_more: true
+      show_more_text: "View all posts →"
+      show_more_url: "/archive/"
 
   - title: rss
     url: feed.xml
