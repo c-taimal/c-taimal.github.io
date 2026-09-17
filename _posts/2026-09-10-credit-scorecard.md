@@ -46,13 +46,14 @@ A partir de un criterio de negocios, habremos de definir que es un cliente malo:
 
 Con base a esta definición y priorización, pasaremos a construir la variable respuesta:
 
+<div>
 $$
 y = \begin{cases} 
 1 & \text{if a client is ``bad'' as per business rules} \\
 0 & \text{otherwise}
 \end{cases}
 $$
-
+</div>
 
 Luego, a partir de $$y$$, definiremos $$p$$,
 
