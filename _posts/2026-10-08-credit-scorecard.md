@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "On Building Scorecards"
-date: 2026-09-10
+date: 2026-10-08
 categories: [credit-risk, classification, statistics, finance]
 ---
 
@@ -149,19 +149,19 @@ $$\sum_{j = 1}^c (Distr. Goods_{j} - Distr. Bads_{j}) \times ln \Bigg(\frac{Dist
 Para interpretar el IV de una variable, se tiene en cuenta la siguiente regla empírica:
 
 - $$IV < 0.02$$ indica una variable no predictivo;
-- $$0.02 \geq IV \leq 0.1$$ indica una variable débilmente predictiva;
-- $$0.1 \geq IV \leq 0.3$$ indica una variable medianamente predictiva;
-- $$0.3 \geq IV \leq 0.5$$ indica una variable fuértemente predictiva.
+- $$0.02 \leq IV \leq 0.1$$ indica una variable débilmente predictiva;
+- $$0.1 \leq IV \leq 0.3$$ indica una variable medianamente predictiva;
+- $$0.3 \leq IV \leq 0.5$$ indica una variable fuértemente predictiva.
 
 Si es mayor a 0.5, se recomienda proceder con cuidado, ya que su poder de predicción es alto, e indica, una alta correlación de la covariable con la definición de clientes malos. 
 
-## Shapley Values and Relationship with *Odds*
+## SHAP Values and Relationship with *Odds*
 
-Finalmente, tenemos los valores SHAP, anagrama de Shapley Additive Explanations, que consiste en una métrica domada de la teoría de juegos. La definición se toma de Ponce-Bobadilla, et al. (2024)[^4], mientras la fórmula de la aproximación de Molnar (2025)[^5].
+Finalmente, tenemos los valores SHAP, anagrama de Shapley Additive Explanations que consiste en una métrica tomada de la teoría de juegos. La definición corresponde a la dada por Ponce-Bobadilla, et al. (2024)[^4], mientras la fórmula de la aproximación es de Molnar (2025)[^5].
 
 Bajo la definición de juegos, se consideran $$N$$ jugadores que trabajarán en conjunto para lograr un propósito en común, esto tras generar una distribución justa para la recompensa de su trabajo, sin llegar a ser igual para todos.
 
-La recompensa se denota por $$\mathcal{V}$$ y cada jugador por $$j$$.El valor Shapley asignado al jugador viene denotado por $$\phi_j$$ que es la distribución justa, de la recompensa, basada en su contribución individual.
+La recompensa se denota por $$\mathcal{V}$$ y cada jugador por $$j$$.El valor Shapley asignado al jugador viene denotado por $$\phi_j$$ que es la distribución justa de la recompensa basada en su contribución individual.
 
 
 La fórmula de $$\phi_j$$ viene dada por,
@@ -199,28 +199,61 @@ Ahora, bien, es natural pensar, ¿cómo entra a jugar esta teoría en la constru
 
 Los modelos de clasificación binaria, no suelen retornar probabilidades crudas, si no, los log-*odds*. Además, los valores SHAP poseen una naturaleza aditiva. De esta forma, podemos descomponer los log-*odds* de la siguiente forma,
 
-$$f(x) = \phi_0 + \sum_{j = 1}^{p} \phi_j(\mathbf{x})$$
+$$f(\mathbf{x}) = \phi_0 + \sum_{j = 1}^{p} \phi_j(\mathbf{x})$$
 
-con $$p$$ el número de variables y $$\phi_0$$ el valor base o la predicción sin la contribución de ninguna covariable. Como estamos prediciendo log-*odds*, podemos escribir (Lundberg & Lee, 2017[^6]; Nohara, et. al, 2022[^7]),
+con $$p$$ el número de variables y $$\phi_0$$ el valor base o la predicción sin la contribución de ninguna covariable. Los log-odds, son así, las predicciones que devuelve el modelo, sea una regresión logística, o como es lo que nos ocupa hoy, un clasificador basado en árboles. Como estamos prediciendo log-*odds*, podemos escribir (Lundberg & Lee, 2017[^6]; Nohara, et. al, 2022[^7]),
 
 $$log-odds = \phi_0 + \sum_{j = 1}^{p} \phi_j(\mathbf{x})$$
 
 
-Y, para una variable $$j$$ con una categoría $$i$$, podemos calcular sus contribuciones de la siguiente forma,
+Y, para una variable $$j$$ con una categoría $$k$$, podemos calcular sus contribuciones de la siguiente forma,
 
-$$\bar{\phi}_{i,j} = \frac{1}{N_j} \sum_{k \in Cat_i} \phi_j (x_k)$$
+$$\bar{\phi}_{j, k} = \frac{1}{N_k} \sum_{h \in Cat_k} \phi_j (x_{j, h})$$
 
-Finalmente, si queremos construir un score que considere la distribución a nivel de categorías y las variables que las contienen, usamos (Siddiqi, 2006)[^1]:
+## From SHAP Values to Scores
 
-$$score_j = ln(odds) * \text{Factor} + offset$$
+Con el valor anterior, si queremos construir un score que considere la distribución a nivel de categorías de los log-odds y las variables que dan lugar a estas categorías, usamos (Siddiqi, 2006)[^1]:
+
+$$score = ln(odds) * \text{Factor} + Offset$$
 
 Donde, 
 
 $$\text{Factor} = \frac{\text{PDO}}{ln(2)}$$
 
-y $$\text{PDO}$$ son los puntos necesarios para que un cliente en riesgo, duplique sus $odds$ de ser un cliente bueno.
+$$\text{PDO}$$ es un factor de escala que controla qué tan suave o abruptos, pueden ser la duplicación en los $odds$ de Good:Bad. Estos están relacionados con otro elemento de escalamiento denominado Target Odds, que como su nombre lo indica, refleja cuantos clientes buenos hay por cada malo y, finalmente, tenemos el $$offset$$; el $$offset$$ nos permite escalar el *score* alrededor de un punto de referencia denominado $$Target \ Score$$ ($$Score_0$$). Así,
+
+$$Offset = Score_0 - {Factor \times ln (Odds_0)}$$
 
 
+$$Odds_0$$ es el ya mencionado Target odds y en la industria, un valor común es 50: 1, es decir, por cada cliente malo, hay 50 buenos o,
+
+$$p(bad) = \frac{1}{1+50} = \frac{1}{51} \approx 19.60\%$$
+
+Si por ejemplo elegimos $Score_0 = 600$, un $Target \ Odds = 50:1$ y tenemos que el cliente aumenta sus PDO (en 20 unidades), los odds Good:Bad aumentan también, en aproximadamente el doble o 100:1.
+
+Con lo anterior, podemos pasar a una construcción del $$Score$$, para asignar un puntaje a cada cliente usando los SHAP values.
+
+Teniendo en cuenta que los SHAP values son aditivos y se encuentran escala de log-odds, para un cliente o fila $$\mathbf{x}$$, la predicción en dicha escala viene dada por,
+
+$$ln(Odds(\mathbf{x})) = \phi_0 + \sum_{j = 1}^p \phi_j(x_j)$$
+
+Si sustituimos en la formula de escalamiento,
+
+$$Score = A - B \Bigg( \phi_0 + \sum_{j = 1}^p \phi_j (x_j) \Bigg) = (A - B \phi_0) + \sum_{j = 1}^p -B \phi_j x_j$$
+
+Tal que $$B = Factor$$, $$A = Offset = Score_0 - B ln(odds_0)$$
+
+En este caso, $$\phi_0$$ hace las veces de la contribución promedio de todas las variables en la escala log-odds y se relaciona con los $$Odds_0$$. Luego,
+
+$$Score_{base} = A - B \phi_0$$
+
+Ahora bien, para cada variable $$j$$, 
+
+$$\text{Points}_j (\mathbf{x}) = - B \phi_j(x_j)$$
+
+Finalmente, el score de cada cada cliente $$\mathbf{x}$$ , viene dado aditivamente por,
+
+$$Score(\mathbf{x}) = Score_{base} + \sum_{j = 1}^p Points_j(\mathbf{x})$$
 
 ## Implementation
 
