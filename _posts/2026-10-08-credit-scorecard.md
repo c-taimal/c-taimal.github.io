@@ -220,16 +220,18 @@ Donde,
 
 $$\text{Factor} = \frac{\text{PDO}}{ln(2)}$$
 
-$$\text{PDO}$$ es un factor de escala que controla qué tan suave o abruptos, pueden ser la duplicación en los $odds$ de Good:Bad. Estos están relacionados con otro elemento de escalamiento denominado Target Odds, que como su nombre lo indica, refleja cuantos clientes buenos hay por cada malo y, finalmente, tenemos el $$offset$$; el $$offset$$ nos permite escalar el *score* alrededor de un punto de referencia denominado $$Target \ Score$$ ($$Score_0$$). Así,
+Por facilidad, en adelante, nos referiremos a $$B = \text{Factor}$$. $$\text{PDO}$$ es un factor de escala que controla qué tan suave o abruptos, pueden ser la duplicación en los $odds$ de Good:Bad. Estos están relacionados con otro elemento de escalamiento denominado $Target \ Odds$, que como su nombre lo indica, refleja cuantos clientes buenos hay por cada malo y, finalmente, tenemos el $$Offset$$; el $$Offset$$ nos permite escalar el *Score* alrededor de un punto de referencia denominado $$Target \ Score$$ ($$Score_0$$). Así, supongamos que tenemos un $$Score_0$$ de referencia, luego:
 
-$$Offset = Score_0 - {Factor \times ln (Odds_0)}$$
+$$Score_0 = Offset + B ln (Odds_0)$$
+
+$$ \Longrightarrow Offset = Score_0 - {B \times ln (Odds_0)}$$
 
 
 $$Odds_0$$ es el ya mencionado Target odds y en la industria, un valor común es 50: 1, es decir, por cada cliente malo, hay 50 buenos o,
 
 $$p(bad) = \frac{1}{1+50} = \frac{1}{51} \approx 19.60\%$$
 
-Si por ejemplo elegimos $Score_0 = 600$, un $Target \ Odds = 50:1$ y tenemos que el cliente aumenta sus PDO (en 20 unidades), los odds Good:Bad aumentan también, en aproximadamente el doble o 100:1.
+Si por ejemplo elegimos $Target \ Odds = 50:1$ y tenemos que el cliente aumenta sus PDO (en 20 unidades), los odds Good:Bad aumentan también, en aproximadamente el doble o 100:1.
 
 Con lo anterior, podemos pasar a una construcción del $$Score$$, para asignar un puntaje a cada cliente usando los SHAP values.
 
@@ -239,21 +241,31 @@ $$ln(Odds(\mathbf{x})) = \phi_0 + \sum_{j = 1}^p \phi_j(x_j)$$
 
 Si sustituimos en la formula de escalamiento,
 
-$$Score = A - B \Bigg( \phi_0 + \sum_{j = 1}^p \phi_j (x_j) \Bigg) = (A - B \phi_0) + \sum_{j = 1}^p -B \phi_j x_j$$
+$$Score = Offset + B \Big[ \phi_0 + \sum_{j = 1}^p \phi_j(x_j) \Big]$$
 
-Tal que $$B = Factor$$, $$A = Offset = Score_0 - B ln(odds_0)$$
+$$\Longrightarrow Score = \Big[ Offset + B \phi_0 \Big] + \sum_{j = 1}^p B \phi_j(x_j)$$
 
-En este caso, $$\phi_0$$ hace las veces de la contribución promedio de todas las variables en la escala log-odds y se relaciona con los $$Odds_0$$. Luego,
+$$Offset + B \phi_0 $$ podemos denominarlos como *Puntos Base*, donde $$Offset$$ nos es conocido en función de $$Score_0$$, $$B$$ y $$Odds_0$$. De esta forma,
 
-$$Score_{base} = A - B \phi_0$$
+$$Puntos \ Base = Score_0 - B ln(Odds_0) + B \phi_0$$
+$$ \Longrightarrow Puntos \ Base = Score_0 + B [\phi_0 - ln(Odds_0)]$$
 
-Ahora bien, para cada variable $$j$$, 
+Finalmente,
+
+$$Score = Score_0 + B [\phi_0  - ln(Odds_0)] +   \sum_{j = 1}^p B \phi_j(x_j)$$
+
+
+En este caso, $$\phi_0$$ hace las veces de la contribución promedio de todas las variables en la escala log-odds. Ahora bien, para cada variable $$j$$, 
 
 $$\text{Points}_j (\mathbf{x}) = - B \phi_j(x_j)$$
 
 Finalmente, el score de cada cada cliente $$\mathbf{x}$$ , viene dado aditivamente por,
 
-$$Score(\mathbf{x}) = Score_{base} + \sum_{j = 1}^p Points_j(\mathbf{x})$$
+$$Score(\mathbf{x}) = Score_{base} + \sum_{j = 1}^p Points_j(x_j)$$
+
+con,
+
+$$Score_{base} = Score_0 + B [\phi_0  - ln(Odds_0)]$$.
 
 ## Implementation
 
