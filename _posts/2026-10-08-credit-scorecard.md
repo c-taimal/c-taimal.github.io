@@ -269,6 +269,13 @@ $$Score_{base} = Score_0 + B [\phi_0  - ln(Odds_0)]$$.
 
 ## Implementation
 
+Algunos aspectos importantes de la implementación:
+
+- Se usará el All Lending Club Data disponible en [Kaggle](https://www.kaggle.com/datasets/wordsforthewise/lending-club);
+
+- Hay oportunidad de un proceso de feature engineering. Sin embargo, ese no es el propósito de este ejercicio. Para un proceso de modelamiento puro, se recomienda realizar ingeniería de atributos.
+
+### Data Loading
 
 # Referencias
 
