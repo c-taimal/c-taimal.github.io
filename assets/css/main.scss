@@ -1,4 +1,103 @@
 ---
+# Only the main Sass file needs front matter
 ---
 
-@import "no-style-please";
+@charset "utf-8";
+
+/* ==========================================================================
+   Tufte-Style Typography Overrides
+   ========================================================================== */
+
+:root {
+  /* Tufte Font Stacks */
+  --font-serif: "et-book", "Cormorant Garamond", "Palatino Linotype", "Book Antiqua", Palatino, "Georgia", serif;
+  --font-sans: "Gill Sans", "Gill Sans MT", "Gill Sans Std", "Calibri", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "Fira Code", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+  /* Tufte Classic Palette */
+  --bg-color: #fffff8;         /* Warm off-white paper tone */
+  --text-color: #111111;       /* Deep high-contrast text */
+  --accent-color: #a00000;     /* Soft crimson for hover/links */
+}
+
+/* Base Body Styling */
+body {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;           /* Tufte favors comfortable reading size (18px-20px) */
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 400;             /* Tufte uses regular weight with italics for structure */
+  line-height: 1.25;
+  margin-top: 1.8em;
+  margin-bottom: 0.5em;
+  clear: right;
+}
+
+h1 {
+  font-size: 2.2rem;
+  font-style: italic;
+}
+
+h2 {
+  font-size: 1.6rem;
+  font-style: italic;
+}
+
+h3 {
+  font-size: 1.3rem;
+  font-style: italic;
+}
+
+/* Code & Preformatted Text */
+code, pre, kbd, samp {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+}
+
+pre code {
+  font-size: 0.85em;
+  line-height: 1.45;
+}
+
+/* Links */
+a {
+  color: var(--text-color);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: var(--accent-color);
+}
+
+/* Navigation / UI Elements */
+nav, header, footer, .meta, time {
+  font-family: var(--font-sans);
+  font-size: 0.9em;
+  letter-spacing: 0.02em;
+}
+
+/* Blockquotes & Epigraphs */
+blockquote {
+  font-family: var(--font-serif);
+  font-style: italic;
+  border-left: none;           /* Remove standard left bar */
+  margin-left: 1.5em;
+  margin-right: 1.5em;
+  padding: 0;
+}
+
+blockquote footer {
+  font-style: normal;
+  font-size: 0.85em;
+  text-align: right;
+}

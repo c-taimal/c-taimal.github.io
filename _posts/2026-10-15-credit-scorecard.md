@@ -1,18 +1,18 @@
 ---
 layout: post
 title: "Let's build a Scorecard using SHAP values: Part 1"
-date: 2026-10-14
+date: 2026-10-15
 categories: [credit-risk, classification, statistics, finance]
 ---
 
 # Introduction
 
-A common situation many of us have faced when applying for a credit product is to having to establish our creditworthiness. Whether we want to buy a new smartphone, renovate or purchase a home, or increase our credit card limit, the final decision rests with the financial institution we approach and, more broadly, with the institutions that make up the complex financial system.
+A common situation many of us have faced when applying for a credit product is to establish our creditworthiness. Whether we want to buy a new smartphone, renovate or purchase a home, or increase our credit card limit, the final decision rests with the financial institution we approach and, more broadly, with the institutions that make up the complex financial system.
 
 
-Creditworthiness is assessed using a quantitative tool known as a $$Scorecard$$, which assigns a numerical value called $$Credit \ Score$$. This value helps assess a customer's credit risk, providing a basis for evaluating both prospective customers (Application Scoring) and existing ones (Behavioral Scoring).
+Creditworthiness is assessed using a quantitative tool known as a $$Scorecard$$, which assigns a numerical value called $$Credit \ Score$$. This value helps assess a client's credit risk, providing a basis for evaluating both prospective clients (Application Scoring) and existing ones (Behavioral Scoring).
 
-The models used to quantify a customer's (or prospective customer's) behavior are commonly based on binary classification, through which a probability is assessed that the customer meets the most representative attributes associated with good or bad behavior according to the company.
+The models used to quantify a client's (or prospective client's) behavior are commonly based on binary classification, through which a probability is assessed that the client meets the most representative attributes associated with good or bad behavior according to the company.
 
 Such attributes are standardized in a tabular format, providing a means to access the point allocation criteria even without a technical background. This enables transparent decision-making and the effective evaluation of creditworthiness and portfolio quality.
 
@@ -39,7 +39,7 @@ As an example, let's consider the following table taken from Siddiqi (2006)[^1]:
 | INCOME | 2,550 -> . | 88 |
 | STATUS | "E," "T," "U" | 79 |
 
-Thus, a customer within the age range 28 -> 34 años, that has MasterCard credit cards, doesn't have an EC_CARD and with a monthly income between 1,850 to 2,550 USD will have the next points allocation:
+Thus, a client within the age range 28 -> 34, that has MasterCard credit cards, doesn't have an EC_CARD and whose monthly income is between 1,850 to 2,550 USD will have the next points allocation:
 
 $$85 + 99 + 83 + 80 + 79 = 426$$
 
@@ -56,7 +56,7 @@ We'll explore in this first part: how to chose covariates or attributes that ref
 
 
 ## **Def [Bad Client]**: 
-If a client is good or bad depends on the business criterion. Usually, a bad client is defined as one that pays late, normally one that pays after 30 days of delay or one that stops paying overall.
+If a client is good or bad depends on business criteria. Usually, a bad client is defined as one that pays late, normally one that pays after 30 days of delay or one that stops paying overall.
 
 Based on this definition and priority, we can construct the target or response variable:
 
@@ -78,7 +78,7 @@ and through $$p$$, we can define the *odds* as,
 
 $$odds = \frac{p}{1-p}$$
 
-This definition measures the magnitude of an event against its abscense.
+This definition measures the magnitude of an event against its absence.
 
 For example if we had a covariate $$X_1$$,
 
@@ -132,11 +132,11 @@ After defining the $odds$ and $OR$, we can introduce the Weight of Evidence and 
 
 $$WoE = \Bigg[ ln\Bigg( \frac{Distr. Good}{Distr. Bad } \Bigg)\Bigg] \times 100$$
 
-For example, suppose we have 565,348 customers, of whom 54,273 are "bad" (
-≈9.6%). Of these 565,348 customers, roughly 
-15% fall within the 23–26 age range, representing approximately 84,803 customers.
+For example, suppose we have 565,348 clients, of whom 54,273 are "bad" (
+≈9.6%). Of these 565,348 client, roughly 
+15% fall within the 23–26 age range, representing approximately 84,803 clients.
 
-The 84,803 customers in the age range are then divided as follows,
+The 84,803 clients in the age range are then divided as follows,
 
 |Age range| Total of Bad Clients | Total of Good Clients | Bad Clients within Age range| Good Clients within Age range|
 | :--- | :--- | :--- | :--- | :--- |
@@ -157,11 +157,11 @@ Replacing for the WoE formula,
 $$WoE_{23-26} = \Bigg[ ln \Bigg( \frac{0.1361}{0.2813} \Bigg) \Bigg] \times 100$$
 $$\approx -72.610$$
 
-The more negative the WoE a greater separability is achieved between bad and good clients for this particular category.
+The more negative the WoE a greater separation is achieved between bad and good clients for this particular category.
 
 On the other hand, let's consider $c$ categories for a particular covariate. The IV, a measure adapted from information theory (see[^3]) is defined as follows,
 
-$$\sum_{j = 1}^c (Distr. Goods_{j} - Distr. Bads_{j}) \times ln \Bigg(\frac{Distr. Godds_{j}}{Distr Bads_{j}}\Bigg)$$
+$$\sum_{j = 1}^c (Distr. Goods_{j} - Distr. Bads_{j}) \times ln \Bigg(\frac{Distr. Goods_{j}}{Distr. Bads_{j}}\Bigg)$$
 
 For a variable its IV is interpreted as shown below:
 
@@ -178,7 +178,7 @@ Finally we have the SHAP values, anagram of **S**hapley **A**dditive ex**P**lana
 
 Under a game context, we consider $$N$$ players that work together to achieve a common purpose; also, a fair distribution of the reward is given without it being the same for all players.
 
-The reward is denoted as $$\mathcal{V}$$ and every player as $$j$$. The Shapley value assigned to the player is denoted as $$\phi_j$$ which is the fair distribution of the reawrd based on their individual contribution.
+The reward is denoted as $$\mathcal{V}$$ and every player as $$j$$. The Shapley value assigned to the player is denoted as $$\phi_j$$, which is the fair distribution of the reward based on their individual contribution.
 
 
 The formula for $$\phi_j$$ is,
@@ -192,11 +192,11 @@ $$\phi_j = \sum_{S \subseteq N \setminus \{j\}} \frac{|S|! (|N| - |S| - 1)!}{|N|
 
 The weights are the inverse of the possible number of coalitions of size $$\|S\|$$ without player $$j$$.
 
-thus, the Shapley values can be considered as the weighted average of marginal contributions of a player for all the possible coalitions.
+Thus, the Shapley values can be considered as the weighted average of marginal contributions of a player for all the possible coalitions.
 
-In our case the analogy to every player are the covariates, the coalition every possible combination of them and the reward the prediction by the $$j$$ covariates in a sample or set of samples.
+In our case the analogy for every player is the covariates, the coalition every possible combination of them and the reward the prediction by the $$j$$ covariates in a sample or set of samples.
 
-As the number of covariates is often large, an exact computation is often difficult, thus it's required an approximation for $$\phi_j$$.
+As the number of covariates is often large, an exact computation is often difficult, thus, an approximation for $$\phi_j$$ is required .
 
 Considering an estimation of the response given by $$\hat{f}$$ that depends for a row or observations $$\mathbf{x}$$ with $$j$$ covariates. To estimate $$\phi_j$$, Monte Carlo sampling is used as follows:
 
@@ -206,7 +206,7 @@ Here,
 
 - $$M$$ are all the Monte Carlo iterations and $$m$$ indexes every possible iteration;
 
-- $$\hat{f}(\mathbf{x}_{+j}^{m})$$: is the prediction for the row $$\mathbf{x}$$ but using values from a different row: $$z$$ for the variable $$j$$;
+- $$\hat{f}(\mathbf{x}_{+j}^{(m)})$$: is the prediction for the row $$\mathbf{x}$$ but using values from a different row $$z$$ for the variable $$j$$;
 
 - $$\hat{f}(\cdot)$$ for $$\mathbf{x}_{-j}^{(m)}$$ is identical to $$x_{+j}^{(m)}$$ but $$\mathcal{x}_{j}^{(m)}$$ is also taken from $$\mathbf{z}$$.
 
@@ -237,7 +237,7 @@ With,
 
 $$\text{Factor} = \frac{\text{PDO}}{ln(2)}$$
 
-From now, we'll call $$B = \text{Factor}$$. $$\text{PDO}$$ is a scaling factor that controls how soft or abrupt are the effects of doubling the Good:Bad $$odds$$. This factor is related to another scaling element that is implicit as we'll see: the $Target \ Odds$, which as its name suggests reflects how many good clients are by every bad and finally, we have the $$Offset$$; the $$Offset$$ allows us to scale the *Score* around a reference value called $$Target \ Score$$ ($$Score_0$$). Now, let's suppose we have a referenc score $$Score_0$$, then:
+From now, we'll call $$B = \text{Factor}$$. $$\text{PDO}$$ is a scaling factor that controls how soft or abrupt the effects of doubling the Good:Bad $$odds$$ are. This factor is related to another scaling element that is implicit as we'll see: the $Target \ Odds$, which as its name suggests reflects how many good clients there are for every bad one, and finally, we have the $$Offset$$; the $$Offset$$ allows us to scale the *Score* around a reference value called $$Target \ Score$$ ($$Score_0$$). Now, let's suppose we have a referenc score $$Score_0$$, then:
 
 $$Score_0 = Offset + B ln (Odds_0)$$
 
@@ -248,7 +248,7 @@ $$Odds_0$$ is the same Target odds and in the industry, a common value is 50: 1,
 
 $$p(bad) = \frac{1}{1+50} = \frac{1}{51} \approx 19.60\%$$
 
-If we would set $Target \ Odds = 50:1$ and we had that a client increases its PDO (en 20 unidades), the Good:Bad odds increase as well in, approximately, the double or 100:1.
+If we would set $Target \ Odds = 50:1$ and we had that a client increases its PDO (by 20 units), the Good:Bad odds increase as well in, approximately, the double or 100:1.
 
 Using the previos information we can now construct our score $$Score$$ using the SHAP.
 
@@ -265,7 +265,7 @@ $$\Longrightarrow Score = \Big[ Offset + B \phi_0 \Big] + \sum_{j = 1}^p B \phi_
 $$Offset + B \phi_0 $$ can be called *Base Score*, with $$Offset$$ already known and in function of $$Score_0$$, $$B$$ and $$Odds_0$$. Thus,
 
 $$Base \ Score = Score_0 - B ln(Odds_0) + B \phi_0$$
-$$ \Longrightarrow Puntos \ Base = Score_0 + B [\phi_0 - ln(Odds_0)]$$
+$$ \Longrightarrow Base \ Score = Score_0 + B [\phi_0 - ln(Odds_0)]$$
 
 Finally,
 
@@ -286,7 +286,7 @@ $$Score_{base} = Score_0 + B [\phi_0  - ln(Odds_0)]$$.
 
 # Conclusion
 
-So far, we dilucidated how the $$OR$$ and the SHAP values are connected, and, as well we could create a workflow to make an implementation. Thus, to create a scorecard we cannot only rely on parametrical procedures that are subjected to all sort of assumptions, but also generalize to a modern machine learning setting which is robust and can scalete in a better way. 
+So far, we elucidated how the $$OR$$ and the SHAP values are connected, and, as well, how a workflow can be made from here. Thus, to create a scorecard we cannot only rely on parametrical procedures that are subjected to all sort of assumptions, but also generalize to a modern machine learning setting which is robust and can scale in a better way. 
 
 Stay tuned for the second part where we'll implement this methodology in Python and allow me to walk you through this.
 
