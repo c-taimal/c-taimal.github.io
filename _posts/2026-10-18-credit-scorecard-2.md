@@ -12,9 +12,9 @@ Some aspects of this exercise:
 - We'll use th **All Lending Club Data** available on [Kaggle](https://www.kaggle.com/datasets/wordsforthewise/lending-club);
 
 
-- Though a feature engineering process could be made, this is not the focus of this exercise, but rather, explain how to transition from SHAP values to a scorecard.
+- Though feature engineering could be performed this is not the focus of this exercise, but rather, explain how to transition from SHAP values to a scorecard.
 
-**Methods:** LightGBM, Logistic Regression, SHAP Values, $t$-Stochastic Neighbor Embeding ($t$-SNE).
+**Methods:** LightGBM, Logistic Regression, SHAP Values, $t$-**S**tochastic **N**eighbor **E**mbedding ($t$-SNE).
 
 **Python Libraries:** $$\texttt{optbinning}, \texttt{lightgbm}, \texttt{scikit-learn}, \texttt{pandas}, \texttt{numpy}, \texttt{matplotlib}, \texttt{seaborn}$$
 
@@ -39,7 +39,7 @@ pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
 ## **Data Loading**
 
-As said previously we'll be using the Loan Club Lending dataset, most specifically, the accepted clients. The rejected ones can be used for a Rejection Inference. On the other hand, only features with under 30% of missing values will be taking into account,
+As mentioned previously, we'll be using the Loan Club Lending dataset, most specifically, the accepted clients. The rejected ones can be used for a Rejection Inference. On the other hand, only features with under 30% of missing values will be taking into account,
 
 ```python
 # url: https://www.kaggle.com/datasets/wordsforthewise/lending-club/data
@@ -70,11 +70,11 @@ accepted_df['loan_status'] = accepted_df['loan_status'].replace({'Fully Paid': 0
 
 ## **Time-based Splitting and Variable Pre-selection**
 
-To implement our classification models, we must consider the clients have an associated date of issue for the credits. This date could implicitely influence our clients behavior through association with macroeconomic proxy and credit-related variables. The issue date variables is codified as `issue_d` and goes from 2007 to 2018.
+To implement our classification models, we must consider the clients have an associated date of issue for the credits. This date could implicitly influence our clients behavior through association with macroeconomic proxy and credit-related variables. The issue date variable is encoded as `issue_d` and goes from 2007 to 2018.
 
 <img src="https://c-taimal.github.io/images/issue_date_ts.png" style="display: block; margin: auto;" />
 
-Before 2014 there is an increase in the number of issued credits with a maximum volume of clients reached between 2014-2017 with a decrease after 2017 until 2018. While a random data splitting for the training, validation and testing could be made, variables measured after the time window could influence our results and create a leakage; to avoid such behavior, we start by using `issue_d` as an index for our data and to sort them chronologically. Next, we'll use this order to split our data into the three common subsets,
+Before 2014 there is an increase in the number of issued credits with a maximum volume of clients reached between 2014-2017 with a decrease after 2017 until 2018. While random data splitting for training, validation, and testing could be performed, variables measured after the time window could influence our results and create a leakage; to avoid such behavior, we start by using `issue_d` as an index for our data and to sort them chronologically. Next, we'll use this order to split our data into the three common subsets,
 
 ```python
 from datetime import *
@@ -105,7 +105,7 @@ test_df = covariables.iloc[val_end:]
 y_test = target.iloc[val_end:]
 ```
 
-![Splitting Scheme](https://i.imgur.com/frDx23I.png)
+<img src="https://c-taimal.github.io/images/splitting_scheme.png" style="display: block; margin: auto;" />
 
 After splitting we'll work validating and selecting variables on the training set. For this, we first define what features are qualitative and which ones are quantitative,
 
@@ -127,7 +127,7 @@ test_df['credit_history_length_days'] = pd.to_datetime(test_df['issue_d'], forma
 test_df['credit_history_length_days']  = (test_df['credit_history_length_days']).dt.days
 ```
 
-After that we update our variables list after omiting additional variables that are date-related and non qualitative as we thought,
+After that, we update our variable list omitting additional variables that are date-related and non qualitative,
 
 ```python
 # Let's update our list of variables by type
@@ -222,7 +222,7 @@ for var in numericas:
 ks_df = pd.DataFrame({'variables': numericas, 'p_values': p_values_ls, 'd_statistic': d_statistic_ls})
 ks_df = ks_df.loc[((ks_df['p_values'] < 0.05) & (ks_df['d_statistic'] > 0.1))]
 ```
-With obtain then 15 quantitative variables marked as significant by the test:
+We thus obtain 15 quantitative variables marked as significant by the test:
 
 `int_rate`, `dti`, `fico_range_high`, `fico_range_low`, `total_pymnt`, `total_pymnt_inv`, `total_rec_prncp`, `total_rec_late_fee`, `recoveries`, `collection_recovery_fee`, `last_pymnt_amnt`, `last_fico_range_high`,  `last_fico_range_low`, `acc_open_past_24mths`,  `num_tl_op_past_12m`.
 
@@ -233,7 +233,7 @@ At a global level we have the following variables to train our model,
 |`term` |	The number of payments on the loan. Values are in months and can be either 36 or 60.|
 |`grade` |	LC assigned loan grade.|
 |`int_rate` |	Interest Rate on the loan.|
-|`dti` |	A ratio calculated using the borrower󿾒s total monthly debt payments on the total debt obligations, excluding mortgage and the requested LC loan, divided by the borrower󿾒s self-reported monthly income.|
+|`dti` |	A ratio calculated using the borrower's total monthly debt payments on the total debt obligations, excluding mortgage and the requested LC loan, divided by the borrower󿾒s self-reported monthly income.|
 |`fico_range_high` |	The upper boundary range the borrower's FICO at loan origination belongs to.|
 |`fico_range_low`	| The lower boundary range the borrower's FICO at loan origination belongs to.|
 |`total_pymnt` |	Payments received to date for total amount funded.|
@@ -248,7 +248,7 @@ At a global level we have the following variables to train our model,
 |`acc_open_past_24mths` |	Number of trades opened in past 24 months.|
 |`num_tl_op_past_12m`	| Number of accounts opened in past 12 months.|
 
-Let's now explore these variables behave.
+Let's now explore how these variables behave.
 
 ## **Exploratory Data Analysis**
 
@@ -256,7 +256,7 @@ Let's now explore these variables behave.
 
 <img src="https://c-taimal.github.io/images/qualitatives_eda.png" style="display: block; margin: auto;" />
 
-As we said, we only have as qualitative the internal grading by the company and the term of the loan in months. For the grading, in a increasing manner (G->F->E->D->C->B->A) we observe the charged-off clients concentrate in the lower leverls, mostly around the mid grades: C, D, and E, while fully paid clients or not charged-off mostly often, have a grade of A or B. 
+As we said, we only have as qualitative features the internal grading by the company and the term of the loan in months. For the grading, in an increasing manner (G->F->E->D->C->B->A, i.e., A is better and G is worst) we observe the charged-off clients concentrate in the lower leverls, mostly around the mid grades: C, D, and E, while fully paid clients or not charged-off mostly often, have a grade of A or B. 
 
 On the other hand, the fully paid clients tend to be on the 36 months of term, with around of 80% of records in this category, while for the ones charged-off, the clients often exhibit a larger concetration in the 60 months term, with around 44%. Besides that, the distribution of charged-off clients is approximately the same between the two possible terms.
 
@@ -313,7 +313,7 @@ Analyzing the values for the minimum and maximum obtained FICO scores, overall, 
 
 On the other hand,  `dti` shows a global range that goes from 0 to 1000 with a minimum distinction between the curves for charged and non-charged off clients. The interest rates, are usually larger in charged-off clients with this variable, that could be considered as proxies of the purchasing power: non charged-off clients usually pay larger fees per month, nonetheless, naturally, when it comes to debt and delayed payments, charged-off clients pay larger values.
 
-Finally we have variables that measure how the clients behaves in terms of the number of products in the financial system. Charged-off clients usually look up for other alternatives as their fees increasing with the Lending Club and their payments begin to be delayed.
+Finally we have variables that measure how the clients behaves in terms of the number of products in the financial system. Charged-off clients usually look for other alternatives as their fees increase with Lending Club.
 
 Let's check for additional leakage using the biserial-point correlation,
 
@@ -380,9 +380,9 @@ Thus and with the results obtained for the qualitative features, we can profile 
 
 ### **Binning Quantitative Features**
 
-Now, we chose the numerical variables with the higher predictivity power. Yet, the scoring procedure both parametric and non-parametric works with binned or encoded variables.
+We already chose the numerical variables with the highest predictive power yet, the scoring procedure both parametric and non-parametric works with binned or encoded variables.
 
-To accelerate this process we'll use the `optbinning` library that roughly speaking, solves a Convex Mixed-Integer Programming problem to find the better binning both in number of bins and its cut points to maximize a given metric that better separate our response, be it: Information Value, Gini or Log-Likelihood. A rigorous description is given in Navas-Palencia (2022)[^1].
+To accelerate this process we'll use the `optbinning` library which roughly speaking, solves a Convex Mixed-Integer Programming problem to find the best binning, both in number of bins and its cut points, to maximize a given metric that better separate our response, be it: Information Value, Gini or Log-Likelihood. A rigorous description is given in Navas-Palencia (2022)[^1].
 
 By default we define a maximum number of bins equal to 5 as we don't want the final scorecard to be of difficult interpretation and a minimum of 2. We look for a maximization of the IV.
 
@@ -472,7 +472,7 @@ leakage_df
 |`acc_open_past_24mths_binned`|	0.500|
 |`num_tl_op_past_12m_binned`|	0.500|
 
-We remove `total_rec_prncp_binned` as it could create leakage into our data. After that, we proceed to a second training of our model.
+We remove `total_rec_prncp_binned` as it could create leakage into our data, because total principal received is heavily tied to whether a loan reached full maturity or default post-facto, making it a target leak. After that, we proceed to a second training of our model.
 
 ```python
 list_variables_model = [var for var in list_variables_model if var != 'total_rec_prncp_binned']
@@ -559,7 +559,8 @@ feature_importance = pd.Series(shap_importance, index=x_shap.columns).sort_value
 
 top_5_features = feature_importance.head(5).index.tolist()
 ```
-Using the  `shap_values` and the index of the most important features we bring $$\phi_0$$ and $$\phi_j, \ j = 1, 2, 3, 4, 5$$; $$\phi_0$$ is computed for all variables, while there'll be a $$\phi_j, j = 1, 2, 3, 4, 5$$ for every client (i.e., 50,000 SHAP or a matrix of size $$10,000 \times 5$$):
+
+These are: `last_pymnt_amnt_binned`, `int_rate_binned`, `grade`, `term` and `acc_open_past_24mths`. Using the `shap_values` and the index of the most important features we bring $$\phi_0$$ and $$\phi_j, \ j = 1, 2, 3, 4, 5$$; $$\phi_0$$ is computed for all variables, while there'll be a $$\phi_j, j = 1, 2, 3, 4, 5$$ for every client (i.e., 50,000 SHAP or a matrix of size $$10,000 \times 5$$):
 
 ```python
 phi_0 = shap_values.base_values[0]
@@ -617,7 +618,7 @@ def scoring_shap_values(score_0: float, odds_0: float,
 
 We observe the $$\text{PdO}$$ must reverse their polarity as we are modeling a negative event, i.e., the $$\texttt{PdO}$$ reduce the score if there's an increase in the log-odds of being charged-off. 
 
-In a similar way, we revert the order of the $$Odds_0$$ para que se refleje que modelamos la probabilidad de ser charged-off.
+In a similar way, we revert the order of the $$Odds_0$$ so the charged-off probability is better reflected.
 
 Finally, our function returns the points codified per bin for every covariate after setting the defaults values used by the industry,
 
@@ -650,7 +651,7 @@ Let's plot the scores distributions by defaulters and non defaulters,
 
 While there is a small number of clients overlapping, overall, the score can distinguish between those charged-off and those who aren't. In the same manner, we see there are little clients that pass the threshold of 800 points, and without clients with scores under 300, this behavior is similar to that of the FICO.
 
-Now, to check how good the score discriminates we compute the ROC-AUC. As a higher Score indicates a lower probability of default, we must change its polarity to compute the metric and such that it coincides with the original probabilities:
+Now, to check how good the score discriminates we compute the ROC-AUC. As a higher score indicates a lower probability of default, we must change its polarity to compute the metric and such that it coincides with the original probabilities:
 
 ```python
 roc_auc_score(scores_df['default'], -scores_df['score'])
@@ -675,7 +676,7 @@ Finally, using the points assignated to the 5 covariables we represent them in a
 
 <img src="https://c-taimal.github.io/images/tsne_lgbm.png" style="display: block; margin: auto;" />
 
-Overall this assignation allows us to perfectly separate between charged-off and non charged-off clients except for few cases that overlap., esta asignación de puntos permite una separación casi perfecta entre morosos y no morosos, exceptuando algunos casos que se traslapan.
+Overall this assignation allows us to perfectly separate between charged-off and non charged-off clients except for few cases that overlap.
 
 And we have our final scorecard defined as follows,
 
@@ -1012,12 +1013,12 @@ Under the SHAP values there seems to be non significant differences to using a l
 After fitting a Logistic Regression under similar conditions and computing the values to obtain a scorecard, we obtain similar results to the ones we can obtain after using a LightGBM, nevertheless defining one method or another as the best is not easy as it depends on the business needs.
 
 
-First of all, using the LightGBM allows us to mantain the qualitative variables categorical structure. Even if we could encode our numerical variables through the WoE, for the logistic regression we had to create dummies for `grade` and `term` adding more dimension to the data matrix and with it, a possible overfitting.
+First of all, using the LightGBM allows us to maintain the qualitative variables categorical structure. Even if we could encode our numerical variables through the WoE, for the logistic regression we had to create dummies for `grade` and `term` adding more dimension to the data matrix and with it, a possible overfitting.
 
 
-On the other hand the WoE encoding is not strictly bounded and deppends on the original variable (TIBCO, 2026)[^2]. For example, the WoE for `last_pymnt_amnt_woe` goes from -24 to around 200, while for some grades, e.g., `grade_f` it barely shows dispersion ranging from -8 to 8. So an additional checking on the variables range will be necessary to ensure a "normal" behavior for them as extreme values can sometimes interfere with the results of the logistic regression (Lukman et al., 2024)[^3].
+On the other hand the WoE encoding is not strictly bounded and depends on the original variable (TIBCO, 2026)[^2]. For example, the WoE for `last_pymnt_amnt_woe` goes from -24 to around 200, while for some grades, e.g., `grade_f` it barely shows dispersion ranging from -8 to 8. So an additional checking on the variables range will be necessary to ensure a "normal" behavior for them as extreme values can sometimes interfere with the results of the logistic regression (Lukman et al., 2024)[^3].
 
-In the case of using a LightGBM classifier we have a more robustness in regards of possible outliers and extreme values. Also we can proceed with large correlated features and finally, both models can be easily scalabe to large datasets so the election should not rely only on optimizing a metric.
+In the case of using a LightGBM classifier we have a more robustness in regards of possible outliers and extreme values. Also we can proceed with large correlated features and finally, both models can be easily scalabe to large datasets so the choice should not rely only on optimizing a metric.
 
 As we spoke earlier, some regulations define rules to implement risk models, so when it comes to interpretability and audits a logistic regression is preferred. But if we can use any model and we want robustness and modifying our data the less, a tree-based approach like LightGBM can be used.
 

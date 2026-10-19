@@ -20,4 +20,32 @@
   <link rel="shortcut icon" type="image/x-icon" href="{{ site.favicon | relative_url }}" />
   <link rel="stylesheet" href="{{ "/assets/css/main.css" | relative_url }}" />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.css" integrity="sha384-OH8qNTHoMMVNVcKdKewlipV4SErXqccxxlg6HC9Cwjr5oZu2AdBej1TndeCirael" crossorigin="anonymous">   
+
+  <style>
+  /* Style code blocks to match clean technical blog formats */
+  pre.highlight, pre {
+      background-color: #f7f7f9;
+      border: 1px solid #e1e1e8;
+      border-radius: 4px;
+      padding: 12px 16px;
+      font-size: 13px;
+      line-height: 1.45;
+      overflow-x: auto;
+      margin-bottom: 1.5em;
+  }
+
+  /* Ensure code text uses a proper monospace font without overriding Tufte body fonts */
+  code, kbd, pre, samp {
+      font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  }
+
+  /* Inline code styling override */
+  p code, li code {
+      background-color: #f7f7f9;
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-size: 85%;
+  }
+  </style>
+
 </head>
