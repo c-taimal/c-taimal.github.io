@@ -233,7 +233,7 @@ At a global level we have the following variables to train our model,
 |`term` |	The number of payments on the loan. Values are in months and can be either 36 or 60.|
 |`grade` |	LC assigned loan grade.|
 |`int_rate` |	Interest Rate on the loan.|
-|`dti` |	A ratio calculated using the borrower's total monthly debt payments on the total debt obligations, excluding mortgage and the requested LC loan, divided by the borrower󿾒s self-reported monthly income.|
+|`dti` |	A ratio calculated using the borrower's total monthly debt payments on the total debt obligations, excluding mortgage and the requested LC loan, divided by the borrower's self-reported monthly income.|
 |`fico_range_high` |	The upper boundary range the borrower's FICO at loan origination belongs to.|
 |`fico_range_low`	| The lower boundary range the borrower's FICO at loan origination belongs to.|
 |`total_pymnt` |	Payments received to date for total amount funded.|
