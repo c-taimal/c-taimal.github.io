@@ -274,7 +274,7 @@ $$Score = Score_0 + B [\phi_0  - ln(Odds_0)] +   \sum_{j = 1}^p B \phi_j(x_j)$$
 
 In this case, $$\phi_0$$ is similar to $$\beta_0$$ in the logistic regression and measures the average contribution for all the covariables, again, in the log-odds scale. For every variable $$j$$, 
 
-$$\text{Points}_j (\mathbf{x}) = - B \phi_j(x_j)$$
+$$\text{Points}_j (\mathbf{x}) = B \phi_j(x_j)$$
 
 And for every client $$\mathbf{x}$$  their score is given by,
 
@@ -311,5 +311,3 @@ Thanks for your time :).
 [^6]: Lundberg, S.M. & Lee, S. (2017). A unified approach to interpreting model predictions. *In Proceedings of the 31st International Conference on Neural Information Processing Systems (NIPS'17)*. Curran Associates Inc., Red Hook, NY, USA, 4768–4777.
 
 [^7]: Nohara, Y., Matsumoto, K., Soejima, H. & Nakashima, N. (2022). Explanation of machine learning models using shapley additive explanation and application for real data in hospital. *Computer Methods and Programs in Biomedicine*
-
-[^8]: Navas-Palencia, G. (2022). Optimal binning: mathematical programming formulation. Arxiv preprint: https://arxiv.org/abs/2001.08025
