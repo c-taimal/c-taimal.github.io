@@ -14,5 +14,5 @@ Besides data stuff, I enjoy photography (mostly street photography), poetry and 
 
 Feel free to reach out:
 
-* **GitHub**: [github.com/c-taimal](https://github.com/c-taimal)
 * **LinkedIn**: [linkedin.com/in/taimal](https://linkedin.com/in/taimal)
+* **e-mail**: [taimal.yepesc@gmail.com](mailto:taimal.yepesc@gmail.com)
