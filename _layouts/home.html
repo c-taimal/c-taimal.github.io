@@ -6,8 +6,43 @@ layout: default
   {%-if site.theme_config.show_description-%}
     <p>{{ site.description }}</p>
   {%-endif-%}
+
+  <h2>Recent Posts</h2>
+  <ul>
+    {% for post in site.posts %}
+      <li>
+        <span>{{ post.date | date: "%b %d, %Y" }}</span> — 
+        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+      </li>
+    {% endfor %}
+  </ul>
 </header>
 
-{%-include menu_item.html collection=site.data.menu.entries-%}
 
-{{ content }}
+<div class="home">
+  {{ content }}
+
+  <!-- ALL POSTS BY TAG SECTION -->
+  {% if site.tags.size > 0 %}
+    <h2>Tags</h2>
+    <div class="tags-section">
+      {% assign sorted_tags = site.tags | sort %}
+      {% for tag in sorted_tags %}
+        {% assign tag_name = tag[0] %}
+        {% assign tag_posts = tag[1] %}
+        <h3><code>#{{ tag_name }}</code></h3>
+        <ul>
+          {% for post in tag_posts %}
+            <li>
+              <span>{{ post.date | date: "%b %d, %Y" }}</span> — 
+              <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endfor %}
+    </div>
+    <hr>
+  {% endif %}
+
+  
+</div>

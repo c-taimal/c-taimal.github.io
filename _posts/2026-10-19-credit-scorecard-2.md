@@ -2,7 +2,7 @@
 layout: post
 title: "Let's build a Scorecard using SHAP values: Part 2"
 date: 2026-10-19
-categories: [credit-risk, classification, statistics, finance]
+tags: [credit-risk, classification, statistics, finance]
 ---
 
 # **Implementation**
